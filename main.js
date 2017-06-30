@@ -78,7 +78,7 @@ var askQuestion = function() {
                                       return false;
                                   }
                               });
-                      }, 3000);
+                      }, 2500);
                     });
             },
             // create cloze flashcards------------------------------------
@@ -126,7 +126,49 @@ var askQuestion = function() {
                     });
             },
             // practice: read from basic deck----------------------------
-            "Basic Deck": "",
+            "Basic Deck": function() {
+              console.log("cloze deck practice");
+                fs.readFile('./basic.json', 'utf-8', function(err, data) {
+                                if (err) throw err;
+                                var arrayOfObjects = JSON.parse(data);
+                                var count = 0;
+                                play();
+                                function play(){
+                                    var tries = 0;
+                                    if (count < arrayOfObjects.basicDeck.length){
+                                        inquirer.prompt([
+                                            {
+                                                type: "input",
+                                                message: arrayOfObjects.basicDeck[count].question,
+                                                name: "question"
+                                            }
+                                            ]).then(function(answers) {
+                                                if (answers.question.toUpperCase() === arrayOfObjects.basicDeck[count].answer){
+                                                    console.log("Correct!");
+                                                    count++;
+                                                    play();
+                                                }
+                                                else {
+                                                    if (tries < 1){
+                                                        console.log("Incorrect, please try again");
+                                                        tries++;
+                                                        play();
+                                                    }
+                                                    else {
+                                                        console.log("Incorrect! \nThe correct answer is: " + arrayOfObjects.basicDeck[count].answer);
+                                                        count++;
+                                                        play();
+                                                    }
+                                                }
+                                            });
+                                    }
+                                }   
+                            });
+
+
+
+
+            },
             // practice: read from cloze deck-----------------------------
             "Cloze Deck": function(){
                 console.log("cloze deck practice");
