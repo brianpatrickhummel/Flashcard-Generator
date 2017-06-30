@@ -1,6 +1,7 @@
 var ClozeCard = require('./Clozecard.js');
 var BasicCard = require('./BasicCard');
 var inquirer = require('inquirer');
+var fs = require('fs');
 
 var askQuestion = function() {
     inquirer.prompt([
@@ -25,15 +26,22 @@ var askQuestion = function() {
         choices: ["Basic Deck", "Cloze Deck"]   
       }
     ]).then(function(answers) {
+        var currentdate = new Date();   // used to set date information when writing to log.txt
         var action = answers.cardType;
         var lookup = {
+            // text to be written as log entry header
+            logTime: "Log entry created on " + currentdate.getDate() + "/" + (currentdate.getMonth()+1)  + "/" + currentdate.getFullYear() + " @ " + currentdate.getHours() + ":" + currentdate.getMinutes() + ":" + currentdate.getSeconds(),
+            // if cloze statement is not contained in full text, throw/log error
             logError: function(){
-                console.log("cloze not contained in text");
-                fs.appendFile("log.txt", "cloze not contained in text", function(error){
+                console.log("cloze not contained in text, please try again: \n");
+                fs.appendFile("log.txt", lookup.logTime + "\ncloze not contained in text\n", function(error){
                         if(error)console.log("error");
+                        else lookup[action]();
                     });
             },
+            // create basic flashcards------------------------------------
             "Create Basic": 0,
+            // create cloze flashcards------------------------------------
             "Create Cloze": function(){
                 inquirer.prompt([
                     {
@@ -48,20 +56,15 @@ var askQuestion = function() {
                     }
                     ]).then(function(answers) {
                         if ((answers.fullText).includes(answers.clozeText)){
-                            console.log("success!");
-                            // this.partial = fullText.substr(clozeText);
-                            // console.log(ClozeCard);
-                            // console.log(this.partial);
-                            // clozeDeck.push()
+                            console.log("success!"); 
+                            // new ClozeCard()
                         }
-                        else this.logError();
-
-
-
-                        // new ClozeCard()
+                        else lookup.logError();
                     });
             },
+            // practice: read from basic deck----------------------------
             "Basic Deck": "",
+            // practice: read from cloze deck-----------------------------
             "Cloze Deck": ""
         }; 
         lookup[action]();   
