@@ -41,14 +41,53 @@ var askQuestion = function() {
                     });
             },
             // create basic flashcards------------------------------------
-            "Create Basic": 0,
+            "Create Basic": function() {
+                inquirer.prompt([
+                    {
+                        type: "input",
+                        message: "Enter the question text",
+                        name: "questionText"
+                    },
+                    {
+                        type: "input",
+                        message: "Enter the anwswer text",
+                        name: "answerText"
+                    }
+                    ]).then(function(answers) {
+                      fs.readFile('./basic.json', 'utf-8', function(err, data) {
+                          if (err) throw err;
+                          var arrayOfObjects = JSON.parse(data);
+                          arrayOfObjects.basicDeck.push(new BasicCard(answers.questionText.toUpperCase(), answers.answerText.toUpperCase()));
+                          fs.writeFile('./basic.json', JSON.stringify(arrayOfObjects), 'utf-8', function(err) {
+                              if (err) throw err;
+                          });
+                      });
+                      setTimeout(function(){
+                          inquirer.prompt([
+                              {
+                                  type: "list",    
+                                  message: "Add another card?",
+                                  choices: ["Yes", "No"],
+                                  name: "addAnother"
+                              }
+                              ]).then(function(answers) {
+                                  if (answers.addAnother === "Yes"){
+                                      lookup["Create Basic"]();
+                                  }
+                                  else if (answers.addAnother === "No"){
+                                      return false;
+                                  }
+                              });
+                      }, 3000);
+                    });
+            },
             // create cloze flashcards------------------------------------
             "Create Cloze": function(){
                 inquirer.prompt([
                     {
-                        type: "input",
-                        name: "fullText",
+                        type: "input",  
                         message: "Enter full text of statement",
+                        name: "fullText",
                     },
                     {
                         type: "input",
@@ -60,19 +99,18 @@ var askQuestion = function() {
                             fs.readFile('./cloze.json', 'utf-8', function(err, data) {
                                 if (err) throw err;
                                 var arrayOfObjects = JSON.parse(data);
-                                arrayOfObjects.clozeDeck.push(new ClozeCard(answers.fullText, answers.clozeText));
+                                arrayOfObjects.clozeDeck.push(new ClozeCard(answers.fullText.toUpperCase(), answers.clozeText.toUpperCase()));
                                 fs.writeFile('./cloze.json', JSON.stringify(arrayOfObjects), 'utf-8', function(err) {
                                     if (err) throw err;
                                 });
                             });
-
                             setTimeout(function(){
                                 inquirer.prompt([
                                     {
-                                        type: "list",
-                                        name: "addAnother",
+                                        type: "list",    
                                         message: "Add another card?",
-                                        choices: ["Yes", "No"]
+                                        choices: ["Yes", "No"],
+                                        name: "addAnother"
                                     }
                                     ]).then(function(answers) {
                                         if (answers.addAnother === "Yes"){
@@ -103,11 +141,11 @@ var askQuestion = function() {
                                         inquirer.prompt([
                                             {
                                                 type: "input",
-                                                name: "question",
-                                                message: arrayOfObjects.clozeDeck[count].partial
+                                                message: arrayOfObjects.clozeDeck[count].partial,
+                                                name: "question"
                                             }
                                             ]).then(function(answers) {
-                                                if (answers.question === arrayOfObjects.clozeDeck[count].cloze){
+                                                if (answers.question.toUpperCase() === arrayOfObjects.clozeDeck[count].cloze){
                                                     console.log("Correct!");
                                                     count++;
                                                     play();
