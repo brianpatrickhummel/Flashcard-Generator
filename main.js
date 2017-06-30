@@ -28,8 +28,9 @@ var askQuestion = function() {
         choices: ["Basic Deck", "Cloze Deck"]   
       }
     ]).then(function(answers) {
-        var currentdate = new Date();   // used to set date information when writing to log.txt
         var action = answers.cardType;
+        // used to set date information when writing to log.txt
+        var currentdate = new Date();   
         var lookup = {
             // text to be written as log entry header
             logTime: "Log entry created on " + currentdate.getDate() + "/" + (currentdate.getMonth()+1)  + "/" + currentdate.getFullYear() + " @ " + currentdate.getHours() + ":" + currentdate.getMinutes() + ":" + currentdate.getSeconds(),
@@ -58,8 +59,7 @@ var askQuestion = function() {
                     }
                     ]).then(function(answers) {
                         if ((answers.fullText).includes(answers.clozeText)){
-                            var newClozeCard = new ClozeCard(answers.fullText, answers.clozeText);
-                            clozeDeck.push(newClozeCard);
+                            clozeDeck.push(new ClozeCard(answers.fullText, answers.clozeText));
                             console.log("push success");
                             console.log(clozeDeck);
                              inquirer.prompt([
@@ -84,7 +84,24 @@ var askQuestion = function() {
             // practice: read from basic deck----------------------------
             "Basic Deck": "",
             // practice: read from cloze deck-----------------------------
-            "Cloze Deck": ""
+            "Cloze Deck": function(){
+                console.log("cloze deck practice");
+                console.log(clozeDeck);
+                for (var i = 0; i < clozeDeck.length; i++) {
+                    inquirer.prompt([
+                        {
+                            type: "input",
+                            name: "question",
+                            message: clozeDeck[i].partial
+                        }
+                        ]).then(function(answers) {
+                            if (answers.question === clozeDeck[i].cloze){
+                                console.log("correct!");
+                                return true;
+                            }
+                        });
+                }
+            }
         }; 
         lookup[action]();   
     });

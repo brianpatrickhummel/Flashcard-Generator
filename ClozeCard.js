@@ -4,5 +4,4 @@ var ClozeCard = function(fullText, clozeText){
     this.partial = fullText.replace(clozeText, "...");
 };
 
-
 module.exports = ClozeCard;
