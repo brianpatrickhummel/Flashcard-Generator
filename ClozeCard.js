@@ -1,7 +1,3 @@
-
-
-
-
 var ClozeCard = function(fullText, clozeText){
     this.fullText = fullText;
     this.cloze = clozeText;

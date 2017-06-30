@@ -2,6 +2,8 @@ var ClozeCard = require('./Clozecard.js');
 var BasicCard = require('./BasicCard');
 var inquirer = require('inquirer');
 var fs = require('fs');
+var clozeDeck = [];
+var basicDeck = [];
 
 var askQuestion = function() {
     inquirer.prompt([
@@ -28,7 +30,6 @@ var askQuestion = function() {
     ]).then(function(answers) {
         var currentdate = new Date();   // used to set date information when writing to log.txt
         var action = answers.cardType;
-        var clozeDeck = [];
         var lookup = {
             // text to be written as log entry header
             logTime: "Log entry created on " + currentdate.getDate() + "/" + (currentdate.getMonth()+1)  + "/" + currentdate.getFullYear() + " @ " + currentdate.getHours() + ":" + currentdate.getMinutes() + ":" + currentdate.getSeconds(),
@@ -57,10 +58,25 @@ var askQuestion = function() {
                     }
                     ]).then(function(answers) {
                         if ((answers.fullText).includes(answers.clozeText)){
-                            console.log("success!"); 
                             var newClozeCard = new ClozeCard(answers.fullText, answers.clozeText);
                             clozeDeck.push(newClozeCard);
+                            console.log("push success");
                             console.log(clozeDeck);
+                             inquirer.prompt([
+                                {
+                                    type: "list",
+                                    name: "addAnother",
+                                    message: "Add another card?",
+                                    choices: ["Yes", "No"]
+                                }
+                                ]).then(function(answers) {
+                                    if (answers.addAnother === "Yes"){
+                                        lookup["Create Cloze"]();
+                                    }
+                                    else if (answers.addAnother === "No"){
+                                        return false;
+                                    }
+                                });
                         }
                         else lookup.logError();
                     });
@@ -72,9 +88,6 @@ var askQuestion = function() {
         }; 
         lookup[action]();   
     });
-};
-        
-  
- 
+};        
 
 askQuestion();
