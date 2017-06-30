@@ -28,6 +28,7 @@ var askQuestion = function() {
     ]).then(function(answers) {
         var currentdate = new Date();   // used to set date information when writing to log.txt
         var action = answers.cardType;
+        var clozeDeck = [];
         var lookup = {
             // text to be written as log entry header
             logTime: "Log entry created on " + currentdate.getDate() + "/" + (currentdate.getMonth()+1)  + "/" + currentdate.getFullYear() + " @ " + currentdate.getHours() + ":" + currentdate.getMinutes() + ":" + currentdate.getSeconds(),
@@ -57,7 +58,9 @@ var askQuestion = function() {
                     ]).then(function(answers) {
                         if ((answers.fullText).includes(answers.clozeText)){
                             console.log("success!"); 
-                            // new ClozeCard()
+                            var newClozeCard = new ClozeCard(answers.fullText, answers.clozeText);
+                            clozeDeck.push(newClozeCard);
+                            console.log(clozeDeck);
                         }
                         else lookup.logError();
                     });
