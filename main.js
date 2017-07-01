@@ -90,10 +90,9 @@ var askQuestion = function() {
                                                 return false;
                                             }
                                         });
-
                                   }
                               });
-                      }, 1000);
+                      }, 500);
                     });
             },
             // create cloze flashcards------------------------------------
@@ -109,76 +108,77 @@ var askQuestion = function() {
                         message: "Enter portion of text to be cloze deleted",
                         name: "clozeText"
                     }
-                    ]).then(function(answers) {
-                        if ((answers.fullText).includes(answers.clozeText)){
-                            fs.readFile('./cloze.json', 'utf-8', function(err, data) {
+                ]).then(function(answers) {
+                    if ((answers.fullText).includes(answers.clozeText)){
+                        fs.readFile('./cloze.json', 'utf-8', function(err, data) {
+                            if (err) throw err;
+                            var arrayOfObjects = JSON.parse(data);
+                            arrayOfObjects.clozeDeck.push(new ClozeCard(answers.fullText.toUpperCase(), answers.clozeText.toUpperCase()));
+                            fs.writeFile('./cloze.json', JSON.stringify(arrayOfObjects), 'utf-8', function(err) {
                                 if (err) throw err;
-                                var arrayOfObjects = JSON.parse(data);
-                                arrayOfObjects.clozeDeck.push(new ClozeCard(answers.fullText.toUpperCase(), answers.clozeText.toUpperCase()));
-                                fs.writeFile('./cloze.json', JSON.stringify(arrayOfObjects), 'utf-8', function(err) {
-                                    if (err) throw err;
-                                });
                             });
-                            setTimeout(function(){
-                                inquirer.prompt([
-                                    {
-                                        type: "list",    
-                                        message: "Add another card?",
-                                        choices: ["Yes", "No"],
-                                        name: "addAnother"
+                        });
+                        setTimeout(function(){
+                            inquirer.prompt([
+                                {
+                                    type: "list",    
+                                    message: "Add another card?",
+                                    choices: ["Yes", "No"],
+                                    name: "addAnother"
+                                }
+                                ]).then(function(answers) {
+                                    if (answers.addAnother === "Yes"){
+                                        lookup["Create Cloze"]();
                                     }
-                                    ]).then(function(answers) {
-                                        if (answers.addAnother === "Yes"){
-                                            lookup["Create Cloze"]();
-                                        }
-                                        else if (answers.addAnother === "No"){
-                                            return false;
-                                        }
-                                    });
-                            }, 1000);
-                        }
-                        else lookup.logError();
-                    });
+                                    else if (answers.addAnother === "No"){
+                                        return false;
+                                    }
+                                });
+                        }, 500);
+                    }
+                    else lookup.logError();
+                });
             },
             // practice: read from basic deck----------------------------
             "Basic Deck": function() {
-              console.log("cloze deck practice");
+                console.log("Basic Deck Practice");
                 fs.readFile('./basic.json', 'utf-8', function(err, data) {
-                                if (err) throw err;
-                                var arrayOfObjects = JSON.parse(data);
-                                var count = 0;
-                                play();
-                                function play(){
-                                    var tries = 0;
-                                    if (count < arrayOfObjects.basicDeck.length){
-                                        inquirer.prompt([
-                                            {
-                                                type: "input",
-                                                message: arrayOfObjects.basicDeck[count].question,
-                                                name: "question"
-                                            }
-                                            ]).then(function(answers) {
-                                                if (answers.question.toUpperCase() === arrayOfObjects.basicDeck[count].answer){
-                                                    console.log("Correct!");
-                                                    count++;
-                                                    play();
-                                                }
-                                                else {
-                                                    if (tries < 1){
-                                                        console.log("Incorrect, please try again");
-                                                        tries++;
-                                                        play();
-                                                    }
-                                                    else {
-                                                        console.log("Incorrect! \nThe correct answer is: " + arrayOfObjects.basicDeck[count].answer);
-                                                        count++;
-                                                        play();
-                                                    }
-                                                }
-                                            });
+                    if (err) throw err;
+                    var arrayOfObjects = JSON.parse(data);
+                    var count = 0;
+                    play();
+                    function play(){
+                        var tries = 0;
+                        if (count < arrayOfObjects.basicDeck.length){
+                            inquirer.prompt([
+                                {
+                                    type: "input",
+                                    message: arrayOfObjects.basicDeck[count].question,
+                                    name: "question"
+                                }
+                                ]).then(function(answers) {
+                                    if (answers.question.toUpperCase() === arrayOfObjects.basicDeck[count].answer){
+                                        console.log("Correct!");
+                                        count++;
+                                        play();
                                     }
-                                }   
-                            });
+                                    else {
+                                        if (tries < 1){
+                                            console.log("Incorrect, please try again");
+                                            tries++;
+                                            play();
+                                        }
+                                        else {
+                                            console.log("Incorrect! \nThe correct answer is: " + arrayOfObjects.basicDeck[count].answer);
+                                            count++;
+                                            play();
+                                        }
+                                    }
+                                });
+                        }
+                        else console.log("End of deck");
+                    }     
+                });
 
 
 
@@ -186,63 +186,49 @@ var askQuestion = function() {
             },
             // practice: read from cloze deck-----------------------------
             "Cloze Deck": function(){
-                console.log("cloze deck practice");
+                console.log("Cloze Deck Practice");
                 fs.readFile('./cloze.json', 'utf-8', function(err, data) {
-                                if (err) throw err;
-                                var arrayOfObjects = JSON.parse(data);
-                                var count = 0;
-                                play();
-                                function play(){
-                                    var tries = 0;
-                                    if (count < arrayOfObjects.clozeDeck.length){
-                                        inquirer.prompt([
-                                            {
-                                                type: "input",
-                                                message: arrayOfObjects.clozeDeck[count].partial,
-                                                name: "question"
-                                            }
-                                            ]).then(function(answers) {
-                                                if (answers.question.toUpperCase() === arrayOfObjects.clozeDeck[count].cloze){
-                                                    console.log("Correct!");
-                                                    count++;
-                                                    play();
-                                                }
-                                                else {
-                                                    if (tries < 1){
-                                                        console.log("Incorrect, please try again");
-                                                        tries++;
-                                                        play();
-                                                    }
-                                                    else {
-                                                        console.log("Incorrect! \nThe correct answer is: " + arrayOfObjects.clozeDeck[count].cloze);
-                                                        count++;
-                                                        play();
-                                                    }
-                                                }
-                                            });
+                    if (err) throw err;
+                    var arrayOfObjects = JSON.parse(data);
+                    var count = 0;
+                    play();
+                    function play(){
+                        var tries = 0;
+                        if (count < arrayOfObjects.clozeDeck.length){
+                            inquirer.prompt([
+                                {
+                                    type: "input",
+                                    message: arrayOfObjects.clozeDeck[count].partial,
+                                    name: "question"
+                                }
+                                ]).then(function(answers) {
+                                    if (answers.question.toUpperCase() === arrayOfObjects.clozeDeck[count].cloze){
+                                        console.log("Correct!");
+                                        count++;
+                                        play();
                                     }
-                                }   
-                            });
-
-
-                // for (var i = 0; i < clozeDeck.length; i++) {
-                //     inquirer.prompt([
-                //         {
-                //             type: "input",
-                //             name: "question",
-                //             message: clozeDeck[i].partial
-                //         }
-                //         ]).then(function(answers) {
-                //             if (answers.question === clozeDeck[i].cloze){
-                //                 console.log("correct!");
-                //                 return true;
-                //             }
-                //         });
-                // }
+                                    else {
+                                        if (tries < 1){
+                                            console.log("Incorrect, please try again");
+                                            tries++;
+                                            play();
+                                        }
+                                        else {
+                                            console.log("Incorrect! \nThe correct answer is: " + arrayOfObjects.clozeDeck[count].cloze);
+                                            count++;
+                                            play();
+                                        }
+                                    }
+                                });
+                        }
+                        else console.log("End of deck");
+                    }   
+                });
             }
-        }; 
+        };
+        // uses the answers from the INQUIRER section to call a function from the LOOKUP object 
         lookup[action]();   
     });
 };        
-
+// initializes the app - INQUIRER prompt
 askQuestion();
