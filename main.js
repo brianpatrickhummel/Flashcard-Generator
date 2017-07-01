@@ -9,20 +9,20 @@ var askQuestion = function() {
         type: "list",
         name: "doWhat",
         message: "What would you like to do ?",
-        choices: ["Practice", "Create New Cards"]
+        choices: ["Practice with a flashcard deck", "Create New Flashcards"]
       },
       {
         type: "list",
         message: "Which type of card(s) do you want to create?",
         name: "cardType",
-        when: function(answers){return answers.doWhat === "Create New Cards";},
+        when: function(answers){return answers.doWhat === "Create New Flashcards";},
         choices: ["Create Basic", "Create Cloze"]   
       },
       { 
         type: "list",
         message: "Practice with which flashcard deck?",
         name: "cardType",
-        when: function(answers){return answers.doWhat === "Practice";},
+        when: function(answers){return answers.doWhat === "Practice with a flashcard deck";},
         choices: ["Basic Deck", "Cloze Deck"]   
       }
     ]).then(function(answers) {
@@ -75,10 +75,25 @@ var askQuestion = function() {
                                       lookup["Create Basic"]();
                                   }
                                   else if (answers.addAnother === "No"){
-                                      return false;
+                                      inquirer.prompt([
+                                        {
+                                            type: "list",    
+                                            message: "Would you like to practice with this deck?",
+                                            choices: ["Yes", "No"],
+                                            name: "practiceNow"
+                                        }
+                                        ]).then(function(answers) {
+                                            if (answers.practiceNow === "Yes"){
+                                                lookup["Basic Deck"]();
+                                            }
+                                            else if (answers.practiceNow === "No"){
+                                                return false;
+                                            }
+                                        });
+
                                   }
                               });
-                      }, 2500);
+                      }, 1000);
                     });
             },
             // create cloze flashcards------------------------------------
@@ -120,7 +135,7 @@ var askQuestion = function() {
                                             return false;
                                         }
                                     });
-                            }, 3000);
+                            }, 1000);
                         }
                         else lookup.logError();
                     });
