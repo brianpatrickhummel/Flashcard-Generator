@@ -116,7 +116,7 @@ var askQuestion = function() {
                 var arrayOfObjects = JSON.parse(data);
                 arrayOfObjects.clozeDeck.push(new ClozeCard(answers.fullText.toUpperCase(), answers.clozeText.toUpperCase()));
                 fs.writeFile('./cloze.json', JSON.stringify(arrayOfObjects), 'utf-8', function(err) {
-                    if (err) throw err;
+                  if (err) throw err;
                 });
               });
               setTimeout(function(){
