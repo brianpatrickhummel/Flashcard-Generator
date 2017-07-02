@@ -29,6 +29,7 @@ var askQuestion = function() {
     var action = answers.cardType;
     // used to set date information when writing to log.txt
     var currentdate = new Date();   
+    //-------------------------------------- main object ------------------------------------------------------------------
     var lookup = {
       // text to be written as log entry header---------------------------------
       logTime: "Log entry created on " + currentdate.getDate() + "/" + (currentdate.getMonth()+1)  + "/" + currentdate.getFullYear() + " @ " + currentdate.getHours() + ":" + currentdate.getMinutes() + ":" + currentdate.getSeconds(),
@@ -87,7 +88,7 @@ var askQuestion = function() {
                     lookup["Basic Deck"]();
                   }
                   else if (answers.practiceNow === "No"){
-                    return false;
+                    process.exit(0);
                   }
                 });
               }
@@ -131,7 +132,21 @@ var askQuestion = function() {
                     lookup["Create Cloze"]();
                   }
                   else if (answers.addAnother === "No"){
-                    return false;
+                    inquirer.prompt([
+                      {
+                        type: "list",    
+                        message: "Would you like to practice with this deck?",
+                        choices: ["Yes", "No"],
+                        name: "practiceNow"
+                      }
+                    ]).then(function(answers) {
+                      if (answers.practiceNow === "Yes"){
+                        lookup["Cloze Deck"]();
+                      }
+                      else if (answers.practiceNow === "No"){
+                        process.exit(0);
+                      }
+                    });
                   }
                 });
               }, 500);
