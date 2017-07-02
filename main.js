@@ -27,9 +27,9 @@ var askQuestion = function() {
     }
   ]).then(function(answers) {
     var action = answers.cardType;
-    // used to set date information when writing to log.txt
+    // used to include date/time information when writing to log file
     var currentdate = new Date();   
-    //-------------------------------------- main object ------------------------------------------------------------------
+    //-------------------------------------- main object ------------------------------------------------
     var lookup = {
       // text to be written as log entry header---------------------------------
       logTime: "Log entry created on " + currentdate.getDate() + "/" + (currentdate.getMonth()+1)  + "/" + currentdate.getFullYear() + " @ " + currentdate.getHours() + ":" + currentdate.getMinutes() + ":" + currentdate.getSeconds(),
@@ -161,9 +161,9 @@ var askQuestion = function() {
           if (err) throw err;
           var arrayOfObjects = JSON.parse(data);
           var count = 0;
+          var tries = 0;
           play();
           function play(){
-            var tries = 0;
             if (count < arrayOfObjects.basicDeck.length){
               inquirer.prompt([
                 {
@@ -202,18 +202,18 @@ var askQuestion = function() {
           if (err) throw err;
           var arrayOfObjects = JSON.parse(data);
           var count = 0;
+          var tries = 0;
           play();
-          function play(){
-            var tries = 0;
+          function play(){ 
             if (count < arrayOfObjects.clozeDeck.length){
               inquirer.prompt([
                 {
                   type: "input",
-                  message: arrayOfObjects.clozeDeck[count].partial,
+                  message: arrayOfObjects.clozeDeck[count].question,
                   name: "question"
                 }
               ]).then(function(answers) {
-                if (answers.question.toUpperCase() === arrayOfObjects.clozeDeck[count].cloze){
+                if (answers.question.toUpperCase() === arrayOfObjects.clozeDeck[count].answer){
                   console.log("Correct!");
                   count++;
                   play();
@@ -225,7 +225,7 @@ var askQuestion = function() {
                     play();
                   }
                   else {
-                    console.log("Incorrect! \nThe correct answer is: " + arrayOfObjects.clozeDeck[count].cloze);
+                    console.log("Incorrect! \nThe correct answer is: " + arrayOfObjects.clozeDeck[count].answer);
                     count++;
                     play();
                   }
@@ -235,7 +235,7 @@ var askQuestion = function() {
             else console.log("End of deck");
           }   
         });
-      }
+      },
     };
     // uses the answers from the INQUIRER section to call a function from the LOOKUP object 
     lookup[action]();           

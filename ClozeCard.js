@@ -4,8 +4,8 @@ function ClozeCard(fullText, clozeText){
         return new ClozeCard(fullText, clozeText);
     }
     this.fullText = fullText;
-    this.cloze = clozeText;
-    this.partial = fullText.replace(clozeText, "...");
+    this.answer = clozeText;
+    this.question = fullText.replace(clozeText, "...");
 }
 
 module.exports = ClozeCard;
