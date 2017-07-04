@@ -1,4 +1,4 @@
-var ClozeCard = require('./Clozecard.js');
+var ClozeCard = require('./ClozeCard.js');
 var BasicCard = require('./BasicCard');
 var inquirer = require('inquirer');
 var fs = require('fs');
