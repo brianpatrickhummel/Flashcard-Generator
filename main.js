@@ -3,9 +3,10 @@ var BasicCard = require("./BasicCard");
 var inquirer = require("inquirer");
 var fs = require("fs");
 
-var askQuestion = function () {
+var askQuestion = function() {
   inquirer
-    .prompt([{
+    .prompt([
+      {
         type: "list",
         name: "doWhat",
         message: "What would you like to do ?",
@@ -15,7 +16,7 @@ var askQuestion = function () {
         type: "list",
         message: "Which type of card(s) do you want to create?",
         name: "cardType",
-        when: function (answers) {
+        when: function(answers) {
           return answers.doWhat === "Create New Flashcards";
         },
         choices: ["Create Basic", "Create Cloze"]
@@ -24,20 +25,21 @@ var askQuestion = function () {
         type: "list",
         message: "Practice with which flashcard deck?",
         name: "cardType",
-        when: function (answers) {
+        when: function(answers) {
           return answers.doWhat === "Practice with a flashcard deck";
         },
         choices: ["Basic Deck", "Cloze Deck"]
       }
     ])
-    .then(function (answers) {
+    .then(function(answers) {
       var action = answers.cardType;
       // used to include date/time information when writing to log file
       var currentdate = new Date();
       //-------------------------------------- main object ------------------------------------------------
       var lookup = {
         // text to be written as log entry header---------------------------------
-        logTime: "Log entry created on " +
+        logTime:
+          "Log entry created on " +
           currentdate.getDate() +
           "/" +
           (currentdate.getMonth() + 1) +
@@ -50,21 +52,22 @@ var askQuestion = function () {
           ":" +
           currentdate.getSeconds(),
         // if cloze statement is not contained in full text, throw/log error------
-        logError: function () {
+        logError: function() {
           console.log("cloze not contained in text, please try again: \n");
           fs.appendFile(
             "log.txt",
             lookup.logTime + "\ncloze not contained in text\n",
-            function (error) {
+            function(error) {
               if (error) console.log("error");
               else lookup[action]();
             }
           );
         },
         // create basic flashcards------------------------------------------------
-        "Create Basic": function () {
+        "Create Basic": function() {
           inquirer
-            .prompt([{
+            .prompt([
+              {
                 type: "input",
                 message: "Enter the question text",
                 name: "questionText"
@@ -75,8 +78,8 @@ var askQuestion = function () {
                 name: "answerText"
               }
             ])
-            .then(function (answers) {
-              fs.readFile("./basic.json", "utf-8", function (err, data) {
+            .then(function(answers) {
+              fs.readFile("./basic.json", "utf-8", function(err, data) {
                 if (err) throw err;
                 var arrayOfObjects = JSON.parse(data);
                 arrayOfObjects.basicDeck.push(
@@ -89,31 +92,36 @@ var askQuestion = function () {
                   "./basic.json",
                   JSON.stringify(arrayOfObjects),
                   "utf-8",
-                  function (err) {
+                  function(err) {
                     if (err) throw err;
                   }
                 );
               });
-              setTimeout(function () {
+              setTimeout(function() {
                 inquirer
-                  .prompt([{
-                    type: "list",
-                    message: "Add another card?",
-                    choices: ["Yes", "No"],
-                    name: "addAnother"
-                  }])
-                  .then(function (answers) {
+                  .prompt([
+                    {
+                      type: "list",
+                      message: "Add another card?",
+                      choices: ["Yes", "No"],
+                      name: "addAnother"
+                    }
+                  ])
+                  .then(function(answers) {
                     if (answers.addAnother === "Yes") {
                       lookup["Create Basic"]();
                     } else if (answers.addAnother === "No") {
                       inquirer
-                        .prompt([{
-                          type: "list",
-                          message: "Would you like to practice with this deck?",
-                          choices: ["Yes", "No"],
-                          name: "practiceNow"
-                        }])
-                        .then(function (answers) {
+                        .prompt([
+                          {
+                            type: "list",
+                            message:
+                              "Would you like to practice with this deck?",
+                            choices: ["Yes", "No"],
+                            name: "practiceNow"
+                          }
+                        ])
+                        .then(function(answers) {
                           if (answers.practiceNow === "Yes") {
                             lookup["Basic Deck"]();
                           } else if (answers.practiceNow === "No") {
@@ -126,9 +134,10 @@ var askQuestion = function () {
             });
         },
         // create cloze flashcards------------------------------------------------
-        "Create Cloze": function () {
+        "Create Cloze": function() {
           inquirer
-            .prompt([{
+            .prompt([
+              {
                 type: "input",
                 message: "Enter full text of statement",
                 name: "fullText"
@@ -139,9 +148,9 @@ var askQuestion = function () {
                 name: "clozeText"
               }
             ])
-            .then(function (answers) {
+            .then(function(answers) {
               if (answers.fullText.includes(answers.clozeText)) {
-                fs.readFile("./cloze.json", "utf-8", function (err, data) {
+                fs.readFile("./cloze.json", "utf-8", function(err, data) {
                   if (err) throw err;
                   var arrayOfObjects = JSON.parse(data);
                   arrayOfObjects.clozeDeck.push(
@@ -154,31 +163,36 @@ var askQuestion = function () {
                     "./cloze.json",
                     JSON.stringify(arrayOfObjects),
                     "utf-8",
-                    function (err) {
+                    function(err) {
                       if (err) throw err;
                     }
                   );
                 });
-                setTimeout(function () {
+                setTimeout(function() {
                   inquirer
-                    .prompt([{
-                      type: "list",
-                      message: "Add another card?",
-                      choices: ["Yes", "No"],
-                      name: "addAnother"
-                    }])
-                    .then(function (answers) {
+                    .prompt([
+                      {
+                        type: "list",
+                        message: "Add another card?",
+                        choices: ["Yes", "No"],
+                        name: "addAnother"
+                      }
+                    ])
+                    .then(function(answers) {
                       if (answers.addAnother === "Yes") {
                         lookup["Create Cloze"]();
                       } else if (answers.addAnother === "No") {
                         inquirer
-                          .prompt([{
-                            type: "list",
-                            message: "Would you like to practice with this deck?",
-                            choices: ["Yes", "No"],
-                            name: "practiceNow"
-                          }])
-                          .then(function (answers) {
+                          .prompt([
+                            {
+                              type: "list",
+                              message:
+                                "Would you like to practice with this deck?",
+                              choices: ["Yes", "No"],
+                              name: "practiceNow"
+                            }
+                          ])
+                          .then(function(answers) {
                             if (answers.practiceNow === "Yes") {
                               lookup["Cloze Deck"]();
                             } else if (answers.practiceNow === "No") {
@@ -192,9 +206,9 @@ var askQuestion = function () {
             });
         },
         // practice: read from basic deck-----------------------------------------
-        "Basic Deck": function () {
+        "Basic Deck": function() {
           console.log("Basic Deck Practice");
-          fs.readFile("./basic.json", "utf-8", function (err, data) {
+          fs.readFile("./basic.json", "utf-8", function(err, data) {
             if (err) throw err;
             var arrayOfObjects = JSON.parse(data);
             var count = 0;
@@ -204,12 +218,14 @@ var askQuestion = function () {
             function play() {
               if (count < arrayOfObjects.basicDeck.length) {
                 inquirer
-                  .prompt([{
-                    type: "input",
-                    message: arrayOfObjects.basicDeck[count].question,
-                    name: "question"
-                  }])
-                  .then(function (answers) {
+                  .prompt([
+                    {
+                      type: "input",
+                      message: arrayOfObjects.basicDeck[count].question,
+                      name: "question"
+                    }
+                  ])
+                  .then(function(answers) {
                     if (
                       answers.question.toUpperCase() ===
                       arrayOfObjects.basicDeck[count].answer
@@ -225,7 +241,7 @@ var askQuestion = function () {
                       } else {
                         console.log(
                           "Incorrect! \nThe correct answer is: " +
-                          arrayOfObjects.basicDeck[count].answer
+                            arrayOfObjects.basicDeck[count].answer
                         );
                         count++;
                         play();
@@ -237,9 +253,9 @@ var askQuestion = function () {
           });
         },
         // practice: read from cloze deck-----------------------------------------
-        "Cloze Deck": function () {
+        "Cloze Deck": function() {
           console.log("Cloze Deck Practice");
-          fs.readFile("./cloze.json", "utf-8", function (err, data) {
+          fs.readFile("./cloze.json", "utf-8", function(err, data) {
             if (err) throw err;
             var arrayOfObjects = JSON.parse(data);
             var count = 0;
@@ -249,12 +265,14 @@ var askQuestion = function () {
             function play() {
               if (count < arrayOfObjects.clozeDeck.length) {
                 inquirer
-                  .prompt([{
-                    type: "input",
-                    message: arrayOfObjects.clozeDeck[count].question,
-                    name: "question"
-                  }])
-                  .then(function (answers) {
+                  .prompt([
+                    {
+                      type: "input",
+                      message: arrayOfObjects.clozeDeck[count].question,
+                      name: "question"
+                    }
+                  ])
+                  .then(function(answers) {
                     if (
                       answers.question.toUpperCase() ===
                       arrayOfObjects.clozeDeck[count].answer
@@ -270,7 +288,7 @@ var askQuestion = function () {
                       } else {
                         console.log(
                           "Incorrect! \nThe correct answer is: " +
-                          arrayOfObjects.clozeDeck[count].answer
+                            arrayOfObjects.clozeDeck[count].answer
                         );
                         count++;
                         play();
