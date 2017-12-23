@@ -54,14 +54,10 @@ var askQuestion = function() {
         // if cloze statement is not contained in full text, throw/log error------
         logError: function() {
           console.log("cloze not contained in text, please try again: \n");
-          fs.appendFile(
-            "log.txt",
-            lookup.logTime + "\ncloze not contained in text\n",
-            function(error) {
-              if (error) console.log("error");
-              else lookup[action]();
-            }
-          );
+          fs.appendFile("log.txt", lookup.logTime + "\ncloze not contained in text\n", function(error) {
+            if (error) console.log("error");
+            else lookup[action]();
+          });
         },
         // create basic flashcards------------------------------------------------
         "Create Basic": function() {
@@ -83,19 +79,11 @@ var askQuestion = function() {
                 if (err) throw err;
                 var arrayOfObjects = JSON.parse(data);
                 arrayOfObjects.basicDeck.push(
-                  new BasicCard(
-                    answers.questionText.toUpperCase(),
-                    answers.answerText.toUpperCase()
-                  )
+                  new BasicCard(answers.questionText.toUpperCase(), answers.answerText.toUpperCase())
                 );
-                fs.writeFile(
-                  "./basic.json",
-                  JSON.stringify(arrayOfObjects),
-                  "utf-8",
-                  function(err) {
-                    if (err) throw err;
-                  }
-                );
+                fs.writeFile("./basic.json", JSON.stringify(arrayOfObjects), "utf-8", function(err) {
+                  if (err) throw err;
+                });
               });
               setTimeout(function() {
                 inquirer
@@ -115,8 +103,7 @@ var askQuestion = function() {
                         .prompt([
                           {
                             type: "list",
-                            message:
-                              "Would you like to practice with this deck?",
+                            message: "Would you like to practice with this deck?",
                             choices: ["Yes", "No"],
                             name: "practiceNow"
                           }
@@ -154,19 +141,11 @@ var askQuestion = function() {
                   if (err) throw err;
                   var arrayOfObjects = JSON.parse(data);
                   arrayOfObjects.clozeDeck.push(
-                    new ClozeCard(
-                      answers.fullText.toUpperCase(),
-                      answers.clozeText.toUpperCase()
-                    )
+                    new ClozeCard(answers.fullText.toUpperCase(), answers.clozeText.toUpperCase())
                   );
-                  fs.writeFile(
-                    "./cloze.json",
-                    JSON.stringify(arrayOfObjects),
-                    "utf-8",
-                    function(err) {
-                      if (err) throw err;
-                    }
-                  );
+                  fs.writeFile("./cloze.json", JSON.stringify(arrayOfObjects), "utf-8", function(err) {
+                    if (err) throw err;
+                  });
                 });
                 setTimeout(function() {
                   inquirer
@@ -186,8 +165,7 @@ var askQuestion = function() {
                           .prompt([
                             {
                               type: "list",
-                              message:
-                                "Would you like to practice with this deck?",
+                              message: "Would you like to practice with this deck?",
                               choices: ["Yes", "No"],
                               name: "practiceNow"
                             }
@@ -226,10 +204,7 @@ var askQuestion = function() {
                     }
                   ])
                   .then(function(answers) {
-                    if (
-                      answers.question.toUpperCase() ===
-                      arrayOfObjects.basicDeck[count].answer
-                    ) {
+                    if (answers.question.toUpperCase() === arrayOfObjects.basicDeck[count].answer) {
                       console.log("Correct!");
                       count++;
                       play();
@@ -239,10 +214,7 @@ var askQuestion = function() {
                         tries++;
                         play();
                       } else {
-                        console.log(
-                          "Incorrect! \nThe correct answer is: " +
-                            arrayOfObjects.basicDeck[count].answer
-                        );
+                        console.log("Incorrect! \nThe correct answer is: " + arrayOfObjects.basicDeck[count].answer);
                         count++;
                         play();
                       }
@@ -273,10 +245,7 @@ var askQuestion = function() {
                     }
                   ])
                   .then(function(answers) {
-                    if (
-                      answers.question.toUpperCase() ===
-                      arrayOfObjects.clozeDeck[count].answer
-                    ) {
+                    if (answers.question.toUpperCase() === arrayOfObjects.clozeDeck[count].answer) {
                       console.log("Correct!");
                       count++;
                       play();
@@ -286,10 +255,7 @@ var askQuestion = function() {
                         tries++;
                         play();
                       } else {
-                        console.log(
-                          "Incorrect! \nThe correct answer is: " +
-                            arrayOfObjects.clozeDeck[count].answer
-                        );
+                        console.log("Incorrect! \nThe correct answer is: " + arrayOfObjects.clozeDeck[count].answer);
                         count++;
                         play();
                       }
